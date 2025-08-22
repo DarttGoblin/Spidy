@@ -9,18 +9,6 @@ Answers are generated using Google Gemini AI for natural, conversational respons
 Lightweight Flask server with a React frontend for smooth interaction.
 CORS-ready so you can easily integrate it into a local or remote frontend.
 
-Project Structure
-Spidy/
-├─ data/
-│  ├─ education_data.py
-│  ├─ experiences_data.py
-│  ├─ hobbies_data.py
-│  ├─ projects_data.py
-│  └─ skills_data.py
-├─ Spidy.py        # Flask backend server
-├─ requirements.txt
-└─ README.md
-
 Notes
 
 The AI model used is Gemini-2.5-Flash via Google Generative AI.
