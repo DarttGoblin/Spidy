@@ -14,3 +14,5 @@ Notes
 The AI model used is Gemini-2.5-Flash via Google Generative AI.
 Currently, the server is synchronous, so responses may take a few seconds.
 For development, all origins are allowed via CORS. For production, restrict origins as needed.
+
+You can test it by visiting my portoflio: https://yassinebazgour.vercel.app/
