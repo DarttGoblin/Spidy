@@ -5,8 +5,8 @@ import faiss
 from sentence_transformers import SentenceTransformer
 
 genai.api_key = os.getenv("GEMINI_API_KEY")
-index = faiss.read_index("../embeddings/docs_index.idx")
-docs = np.load("../embeddings/docs.npy", allow_pickle=True).tolist()
+index = faiss.read_index("embeddings/docs_index.idx")
+docs = np.load("embeddings/docs.npy", allow_pickle=True).tolist()
 model = SentenceTransformer('all-MiniLM-L6-v2')
 
 def retrieve_docs(user_question, top_n=3, min_score=0.3):
