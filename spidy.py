@@ -8,7 +8,6 @@ import faiss
 from sentence_transformers import SentenceTransformer
 
 load_dotenv()
-print("Loaded key:", os.getenv("GEMINI_API_KEY"))
 app = Flask(__name__)
 CORS(app)
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
@@ -28,12 +27,17 @@ def retrieve_docs(user_question, top_n=3, min_score=0.3):
     return top_docs
 
 def generate_answer(user_question):
-    context_docs = " ".join(retrieve_docs(user_question))
-    print(context_docs)
+    retrieved = retrieve_docs(user_question)
+    if not retrieved:
+        return "Sorry, I couldn't find information in the portfolio related to that question."
+
+    context_docs = " ".join(retrieved)
     prompt = f"""
-        You are Spidy, a virtual assistant that answers questions about Yassine's professional portfolio.
-        ONLY answer the question using the context below. Do NOT include greetings, small talk, or repetitive intros.
-        Use third person (e.g., "Yassine has done..."). Be concise, accurate, and include friendly emojis occasionally when appropriate.
+        You are Spidy, a concise virtual assistant that answers questions strictly about Yassine's professional portfolio.
+        Use only the context below when available.
+        Do not greet, roleplay, or add extra style.
+        Answer in plain text only, no Markdown, no **bold**, no lists with *.
+        If the context does not contain relevant information, politely say you don't have enough info.
         Context: {context_docs}
         Question: {user_question}
         Answer:
