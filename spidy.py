@@ -12,9 +12,12 @@ app = Flask(__name__)
 CORS(app)
 genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
 
+# Load model and index ONLY ONCE (not on every request)
+print("Loading embeddings and model...")
 index = faiss.read_index("embeddings/docs_index.idx")
 docs = np.load("embeddings/docs.npy", allow_pickle=True).tolist()
 model = SentenceTransformer('all-MiniLM-L6-v2')
+print("Loading complete!")
 
 def retrieve_docs(user_question, top_n=3, min_score=0.3):
     query_vec = model.encode([user_question], convert_to_numpy=True)
@@ -43,10 +46,8 @@ def generate_answer(user_question):
         Answer:
     """
     try:
-        model = genai.GenerativeModel('gemini-2.5-flash')
-        response = model.generate_content(
-            contents=prompt
-        )
+        gen_model = genai.GenerativeModel('gemini-2.5-flash')
+        response = gen_model.generate_content(contents=prompt)
         return response.text.strip()
     except Exception as e:
         return f"Error: {e}"
@@ -57,6 +58,11 @@ def ask():
     question = data.get('question', '')
     answer = generate_answer(question)
     return jsonify({'answer': answer})
+
+# Add a health check endpoint for Render
+@app.route('/', methods=['GET'])
+def health():
+    return jsonify({'status': 'Spidy is awake! 🕷️'})
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
