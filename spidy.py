@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-import google.generativeai as genai
+from google import genai
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import numpy as np
@@ -10,9 +10,8 @@ from sentence_transformers import SentenceTransformer
 load_dotenv()
 app = Flask(__name__)
 CORS(app)
-genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
+client = genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
 
-# Load model and index ONLY ONCE (not on every request)
 print("Loading embeddings and model...")
 index = faiss.read_index("embeddings/docs_index.idx")
 docs = np.load("embeddings/docs.npy", allow_pickle=True).tolist()
@@ -46,8 +45,10 @@ def generate_answer(user_question):
         Answer:
     """
     try:
-        gen_model = genai.GenerativeModel('gemini-2.5-flash')
-        response = gen_model.generate_content(contents=prompt)
+        response = client.models.generate_content(
+            model='gemini-2.5-flash',
+            contents=prompt
+        )
         return response.text.strip()
     except Exception as e:
         return f"Error: {e}"
